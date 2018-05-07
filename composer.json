@@ -1,0 +1,16 @@
+{
+  "name": "bea/crons-warning",
+  "description": "Warn administrator when a defined maximum quantity of crons is detected",
+  "minimum-stability": "stable",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "BeAPI",
+      "email": "technique@beapi.fr"
+    }
+  ],
+  "type": "wordpress-muplugin",
+  "require": {
+    "composer/installers": "~1.0"
+  }
+}
