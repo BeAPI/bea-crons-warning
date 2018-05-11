@@ -6,6 +6,7 @@
   Author: BeAPI
   Author URI: http://www.beapi.fr
   Version: 0.1
+  Requires PHP: 5.6
  */
 
 class BEA_Crons_Warning {
@@ -30,9 +31,10 @@ class BEA_Crons_Warning {
 			return;
 		}
 
-		if ( false === ( $crons = get_transient( 'crons_list' ) ) ) {
+		$crons = get_transient( 'bea_crons_list' );
+		if ( false === $crons ) {
 			$crons = $this->get_crons_list();
-			set_transient( 'crons_list', $crons, HOUR_IN_SECONDS );
+			set_transient( 'bea_crons_list', $crons, HOUR_IN_SECONDS );
 		}
 
 		if ( false === $crons ) {
@@ -44,7 +46,7 @@ class BEA_Crons_Warning {
 		}
 		?>
         <div class="notice notice-error">
-            <p><?php echo esc_html( sprintf( _n( 'There is %1$d currently activated cron. Please consider about cleaning your unnecessary cron job.', ' There are %1$d currently activated crons. Please consider about cleaning your unnecessary cron jobs.', $crons, 'bea_crons_warning' ), $crons ) ); ?></p>
+            <p><?php echo esc_html( sprintf( _n( 'There is %1$d currently activated cron. Please consider about cleaning your unnecessary cron job.', ' There are %1$d currently activated crons. Please consider about cleaning your unnecessary cron jobs.', $crons ), number_format_i18n($crons) ) ); ?></p>
         </div>
 		<?php
 	}
@@ -57,7 +59,7 @@ class BEA_Crons_Warning {
 	public function get_crons_list() {
 		$crons = _get_cron_array();
 
-		$result = array_reduce( $crons, [ $this, 'callback_sum_crons' ] );
+		$result = array_reduce( $crons, [ $this, '_callback_sum_crons' ] );
 
 		return ( ! empty( $result ) ) ? $result : false;
 	}
@@ -70,7 +72,7 @@ class BEA_Crons_Warning {
 	 *
 	 * @return int
 	 */
-	public function callback_sum_crons( $carry, $item ) {
+	private function _callback_sum_crons( $carry, $item ) {
 		$carry += count( $item );
 
 		return $carry;
