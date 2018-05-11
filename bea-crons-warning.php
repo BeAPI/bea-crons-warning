@@ -26,7 +26,7 @@ class BEA_Crons_Warning {
 	 * Display an admin warning when maximum of cron events is reached
 	 */
 	public function admin_notices() {
-		if ( ! is_admin() || 'dashboard' !== get_current_screen()->base ) {
+		if ( ! is_admin() || ! current_user_can( 'manage_options' ) || 'dashboard' !== get_current_screen()->base ) {
 			return;
 		}
 
