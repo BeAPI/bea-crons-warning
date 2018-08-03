@@ -23,6 +23,14 @@ class BEA_Crons_Warning {
 
 	public function __construct() {
 		add_filter( 'admin_notices', [ $this, 'admin_notices' ] );
+		add_action( 'admin_init', [ $this, 'load_i18n' ] );
+	}
+
+	/**
+	 * Load the i18n file from languages general file.
+	 */
+	public function load_i18n() {
+		load_plugin_textdomain( 'bea-crons-warning' );
 	}
 
 	/**
