@@ -1,13 +1,18 @@
 <?php
 /*
-  Plugin Name: BEA Crons Warning
-  Plugin URI: http://www.beapi.fr
-  Description: Warn administrator when the defined maximum quantity of crons is detected
-  Author: BeAPI
-  Author URI: http://www.beapi.fr
-  Version: 0.1
-  Requires PHP: 5.6
- */
+Plugin Name: BEA Crons Warning
+Plugin URI: http://www.beapi.fr
+Description: Warn administrator when the defined maximum quantity of crons is detected
+Author: BeAPI
+Author URI: http://www.beapi.fr
+Version: 0.1
+Requires PHP: 5.6
+*/
+
+// don't load directly
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
+}
 
 class BEA_Crons_Warning {
 
@@ -16,9 +21,6 @@ class BEA_Crons_Warning {
 	 */
 	const BEA_CRONS_WARNING_MAX = 200;
 
-	/**
-	 * BEA_Crons_Warning constructor.
-	 */
 	public function __construct() {
 		add_filter( 'admin_notices', [ $this, 'admin_notices' ] );
 	}
@@ -45,9 +47,15 @@ class BEA_Crons_Warning {
 			return;
 		}
 		?>
-        <div class="notice notice-error">
-            <p><?php echo esc_html( sprintf( _n( 'There is %1$d currently activated cron. Please consider about cleaning your unnecessary cron job.', ' There are %1$d currently activated crons. Please consider about cleaning your unnecessary cron jobs.', $crons ), number_format_i18n($crons) ) ); ?></p>
-        </div>
+		<div class="notice notice-error">
+			<p><?php echo esc_html( sprintf( _n(
+					'There is %1$d currently activated cron. Please consider about cleaning your unnecessary cron job.',
+					' There are %1$d currently activated crons. Please consider about cleaning your unnecessary cron jobs.',
+					$crons,
+					'bea-crons-warning'
+				), number_format_i18n( $crons ) ) ); ?>
+			</p>
+		</div>
 		<?php
 	}
 
@@ -59,7 +67,11 @@ class BEA_Crons_Warning {
 	public function get_crons_list() {
 		$crons = _get_cron_array();
 
-		$result = array_reduce( $crons, [ $this, '_callback_sum_crons' ] );
+		if ( empty( $result ) ) {
+			return false;
+		}
+
+		$result = array_reduce( $crons, [ $this, 'callback_sum_crons' ] );
 
 		return ( ! empty( $result ) ) ? $result : false;
 	}
@@ -72,12 +84,11 @@ class BEA_Crons_Warning {
 	 *
 	 * @return int
 	 */
-	private function _callback_sum_crons( $carry, $item ) {
+	private function callback_sum_crons( $carry, $item ) {
 		$carry += count( $item );
 
 		return $carry;
 	}
-
 }
 
 add_action( 'plugins_loaded', 'bea_bea_crons_warning' );
